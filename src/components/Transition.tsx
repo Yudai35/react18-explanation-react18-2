@@ -1,7 +1,8 @@
-import { useState , useTransition } from "react";
+import { useState } from "react";
 import { Avatar } from "./Avatar";
+import { TaskList } from "./TaskList"
 
-type Task = {
+export type Task = {
     id: number;
     title: string;
     assignee: string;
@@ -31,16 +32,12 @@ const filteringAssignee = (assignee: string) => {
 }
 
 export const Transition = () => {
-    const [isPending, startTransition] = useTransition();
     const [selectedAssignee, setSelectedAssignee] = useState<string>('');
-    const [tasksList, setTasksList] = useState<Task[]>(tasks);
+    const [taskList, setTaskList] = useState<Task[]>(tasks);
 
     const onClickAssignee = (assignee: string) => {
-        setSelectedAssignee(assignee); // ユーザーに何を選択しているか伝えるため緊急性高
-        // トランジションさせたいset関数を中に入れる（※緊急性の高くないset関数を入れる）
-        startTransition(() => {
-            setTasksList(filteringAssignee(assignee)) // 情報量が多くfilterするのには時間がかかってしまうし、遅れて表示されても構わないところなので緊急性低
-        })
+        setSelectedAssignee(assignee); 
+        setTaskList(filteringAssignee(assignee)) 
     }
 
     return (
@@ -53,12 +50,7 @@ export const Transition = () => {
             </div>
             <br />
             <button onClick={() => onClickAssignee('')}>リセット</button>
-            {tasksList.map((task) => (
-                <div key={task.id} style={{ width: '300px' , margin: 'auto', backgroundColor: 'lavender', opacity: isPending ? 0.5 : 1}}>
-                    <p>タイトル：{task.title}</p>
-                    <p>担当：{task.assignee}</p>
-                </div>
-            ))}
+            <TaskList taskList={taskList} />
         </div>
     )
 }
